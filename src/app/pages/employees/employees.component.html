@@ -1,0 +1,181 @@
+<div class="employee-page">
+
+  <div class="top-bar">
+
+    <h1>Quản lý nhân viên</h1>
+
+    <button (click)="showForm = true">
+      + Thêm nhân viên
+    </button>
+
+  </div>
+
+  <!-- FORM -->
+
+  <div class="form-box" *ngIf="showForm">
+
+    <h2>
+
+      {{ isEdit ? 'Sửa nhân viên' : 'Thêm nhân viên' }}
+
+    </h2>
+
+    <input
+      type="text"
+      placeholder="Họ tên"
+      [(ngModel)]="newEmployee.fullName"
+    >
+
+    <input
+      type="text"
+      placeholder="Phòng ban"
+      [(ngModel)]="newEmployee.department"
+    >
+
+    <input
+      type="text"
+      placeholder="Chức vụ"
+      [(ngModel)]="newEmployee.position"
+    >
+
+    <select [(ngModel)]="newEmployee.status">
+
+      <option value="WORKING">
+        WORKING
+      </option>
+
+      <option value="ONLEAVE">
+        ONLEAVE
+      </option>
+
+    </select>
+
+    <button
+      *ngIf="!isEdit"
+      (click)="addEmployee()"
+    >
+      Lưu
+    </button>
+
+    <button
+      *ngIf="isEdit"
+      (click)="updateEmployee()"
+    >
+      Cập nhật
+    </button>
+
+  </div>
+
+  <!-- SEARCH -->
+
+  <div class="search-box">
+
+    <input
+      type="text"
+      placeholder="Tìm nhân viên..."
+      [(ngModel)]="searchText"
+    >
+
+  </div>
+
+  <!-- TABLE -->
+
+  <table>
+
+    <thead>
+
+      <tr>
+
+        <th>ID</th>
+        <th>Họ tên</th>
+        <th>Phòng ban</th>
+        <th>Chức vụ</th>
+        <th>Trạng thái</th>
+        <th>Hành động</th>
+
+      </tr>
+
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let emp of filteredEmployees">
+
+        <td>{{ emp.id }}</td>
+
+        <td>{{ emp.fullName }}</td>
+
+        <td>{{ emp.department }}</td>
+
+        <td>{{ emp.position }}</td>
+
+        <td>
+
+          <span class="status">
+            {{ emp.status }}
+          </span>
+
+        </td>
+
+        <td>
+
+          <button
+            class="edit-btn"
+            (click)="editEmployee(emp)"
+          >
+            Sửa
+          </button>
+
+          <button
+            class="delete-btn"
+            (click)="openDeletePopup(emp.id)"
+          >
+            Xóa
+          </button>
+
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>
+
+<!-- POPUP XÓA -->
+
+<div
+  class="popup-overlay"
+  *ngIf="showDeletePopup"
+>
+
+  <div class="popup">
+
+    <h2>Xóa nhân viên</h2>
+
+    <p>
+      Bạn có chắc muốn xóa không?
+    </p>
+
+    <div class="popup-buttons">
+
+      <button
+        class="cancel-btn"
+        (click)="showDeletePopup = false"
+      >
+        Hủy
+      </button>
+
+      <button
+        class="confirm-btn"
+        (click)="confirmDelete()"
+      >
+        Xóa
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

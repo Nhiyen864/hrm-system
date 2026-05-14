@@ -1,0 +1,66 @@
+<div class="department-page">
+
+  <div class="top-bar">
+
+    <h1>Quản lý phòng ban</h1>
+
+    <button (click)="showForm = true">
+      + Thêm phòng ban
+    </button>
+
+  </div>
+
+  <div class="form-box" *ngIf="showForm">
+
+    <input
+      type="text"
+      placeholder="Tên phòng ban"
+      [(ngModel)]="newDepartment"
+    >
+
+    <button (click)="addDepartment()">
+      Lưu
+    </button>
+
+  </div>
+
+  <table>
+
+    <thead>
+
+      <tr>
+
+        <th>ID</th>
+        <th>Tên phòng ban</th>
+        <th>Hành động</th>
+
+      </tr>
+
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let dept of departments">
+
+        <td>{{dept.id}}</td>
+
+        <td>{{dept.name}}</td>
+
+        <td>
+
+          <button
+            class="delete-btn"
+            (click)="deleteDepartment(dept.id)"
+          >
+            Xóa
+          </button>
+
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>

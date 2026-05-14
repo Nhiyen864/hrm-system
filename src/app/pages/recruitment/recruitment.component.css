@@ -1,0 +1,90 @@
+.recruitment-page{
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.top-bar{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.top-bar button{
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.form-box{
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.form-box input{
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+}
+
+.form-box button{
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+table{
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th{
+  background: #f1f5f9;
+}
+
+th,
+td{
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.status{
+  background: #dbeafe;
+  color: #1d4ed8;
+  padding: 6px 12px;
+  border-radius: 20px;
+}
+
+.close-btn{
+  background: orange;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.delete-btn{
+  background: red;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}

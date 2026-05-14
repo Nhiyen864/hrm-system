@@ -1,0 +1,111 @@
+<div class="leave-page">
+
+  <div class="top-bar">
+
+    <h1>Quản lý nghỉ phép</h1>
+
+    <button (click)="showForm = true">
+      + Tạo đơn nghỉ
+    </button>
+
+  </div>
+
+  <!-- FORM -->
+
+  <div class="form-box" *ngIf="showForm">
+
+    <input
+      type="text"
+      placeholder="Tên nhân viên"
+      [(ngModel)]="newLeave.employee"
+    >
+
+    <input
+      type="date"
+      [(ngModel)]="newLeave.startDate"
+    >
+
+    <input
+      type="date"
+      [(ngModel)]="newLeave.endDate"
+    >
+
+    <input
+      type="text"
+      placeholder="Lý do"
+      [(ngModel)]="newLeave.reason"
+    >
+
+    <button (click)="addLeave()">
+      Lưu
+    </button>
+
+  </div>
+
+  <!-- TABLE -->
+
+  <table>
+
+    <thead>
+
+      <tr>
+
+        <th>ID</th>
+        <th>Nhân viên</th>
+        <th>Từ ngày</th>
+        <th>Đến ngày</th>
+        <th>Lý do</th>
+        <th>Trạng thái</th>
+        <th>Hành động</th>
+
+      </tr>
+
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let item of leaveRequests">
+
+        <td>{{ item.id }}</td>
+
+        <td>{{ item.employee }}</td>
+
+        <td>{{ item.startDate }}</td>
+
+        <td>{{ item.endDate }}</td>
+
+        <td>{{ item.reason }}</td>
+
+        <td>
+
+          <span class="status">
+            {{ item.status }}
+          </span>
+
+        </td>
+
+        <td>
+
+          <button
+            class="approve-btn"
+            (click)="approveLeave(item)"
+          >
+            Duyệt
+          </button>
+
+          <button
+            class="reject-btn"
+            (click)="rejectLeave(item)"
+          >
+            Từ chối
+          </button>
+
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>

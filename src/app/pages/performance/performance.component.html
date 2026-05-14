@@ -1,0 +1,97 @@
+<div class="performance-page">
+
+  <div class="top-bar">
+
+    <h1>Đánh giá nhân viên</h1>
+
+    <button (click)="showForm = true">
+      + Thêm đánh giá
+    </button>
+
+  </div>
+
+  <!-- FORM -->
+
+  <div class="form-box" *ngIf="showForm">
+
+    <input
+      type="text"
+      placeholder="Tên nhân viên"
+      [(ngModel)]="newPerformance.employee"
+    >
+
+    <input
+      type="number"
+      placeholder="Điểm"
+      [(ngModel)]="newPerformance.score"
+    >
+
+    <input
+      type="text"
+      placeholder="Nhận xét"
+      [(ngModel)]="newPerformance.review"
+    >
+
+    <input
+      type="text"
+      placeholder="Kỳ đánh giá"
+      [(ngModel)]="newPerformance.period"
+    >
+
+    <button (click)="addPerformance()">
+      Lưu
+    </button>
+
+  </div>
+
+  <!-- TABLE -->
+
+  <table>
+
+    <thead>
+
+      <tr>
+
+        <th>ID</th>
+        <th>Nhân viên</th>
+        <th>Điểm</th>
+        <th>Nhận xét</th>
+        <th>Kỳ đánh giá</th>
+        <th>Hành động</th>
+
+      </tr>
+
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let item of performances">
+
+        <td>{{ item.id }}</td>
+
+        <td>{{ item.employee }}</td>
+
+        <td>{{ item.score }}</td>
+
+        <td>{{ item.review }}</td>
+
+        <td>{{ item.period }}</td>
+
+        <td>
+
+          <button
+            class="delete-btn"
+            (click)="deletePerformance(item.id)"
+          >
+            Xóa
+          </button>
+
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>

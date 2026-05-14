@@ -1,0 +1,82 @@
+<div class="attendance-page">
+
+  <div class="top-bar">
+
+    <h1>Quản lý chấm công</h1>
+
+    <button (click)="showForm = true">
+      + Chấm công
+    </button>
+
+  </div>
+
+  <!-- FORM -->
+
+  <div class="form-box" *ngIf="showForm">
+
+    <input
+      type="text"
+      placeholder="Tên nhân viên"
+      [(ngModel)]="newAttendance.employee"
+    >
+
+    <input
+      type="date"
+      [(ngModel)]="newAttendance.date"
+    >
+
+    <input
+      type="time"
+      [(ngModel)]="newAttendance.checkIn"
+    >
+
+    <input
+      type="time"
+      [(ngModel)]="newAttendance.checkOut"
+    >
+
+    <button (click)="addAttendance()">
+      Lưu
+    </button>
+
+  </div>
+
+  <!-- TABLE -->
+
+  <table>
+
+    <thead>
+
+      <tr>
+
+        <th>ID</th>
+        <th>Nhân viên</th>
+        <th>Ngày</th>
+        <th>Check In</th>
+        <th>Check Out</th>
+
+      </tr>
+
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let item of attendances">
+
+        <td>{{ item.id }}</td>
+
+        <td>{{ item.employee }}</td>
+
+        <td>{{ item.date }}</td>
+
+        <td>{{ item.checkIn }}</td>
+
+        <td>{{ item.checkOut }}</td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>

@@ -1,0 +1,104 @@
+<div class="recruitment-page">
+
+  <div class="top-bar">
+
+    <h1>Quản lý tuyển dụng</h1>
+
+    <button (click)="showForm = true">
+      + Thêm tuyển dụng
+    </button>
+
+  </div>
+
+  <!-- FORM -->
+
+  <div class="form-box" *ngIf="showForm">
+
+    <input
+      type="text"
+      placeholder="Tiêu đề"
+      [(ngModel)]="newRecruitment.title"
+    >
+
+    <input
+      type="text"
+      placeholder="Mô tả"
+      [(ngModel)]="newRecruitment.description"
+    >
+
+    <input
+      type="text"
+      placeholder="Phòng ban"
+      [(ngModel)]="newRecruitment.department"
+    >
+
+    <button (click)="addRecruitment()">
+      Lưu
+    </button>
+
+  </div>
+
+  <!-- TABLE -->
+
+  <table>
+
+    <thead>
+
+      <tr>
+
+        <th>ID</th>
+        <th>Tiêu đề</th>
+        <th>Mô tả</th>
+        <th>Phòng ban</th>
+        <th>Trạng thái</th>
+        <th>Hành động</th>
+
+      </tr>
+
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let item of recruitments">
+
+        <td>{{ item.id }}</td>
+
+        <td>{{ item.title }}</td>
+
+        <td>{{ item.description }}</td>
+
+        <td>{{ item.department }}</td>
+
+        <td>
+
+          <span class="status">
+            {{ item.status }}
+          </span>
+
+        </td>
+
+        <td>
+
+          <button
+            class="close-btn"
+            (click)="closeRecruitment(item)"
+          >
+            Đóng
+          </button>
+
+          <button
+            class="delete-btn"
+            (click)="deleteRecruitment(item.id)"
+          >
+            Xóa
+          </button>
+
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>
