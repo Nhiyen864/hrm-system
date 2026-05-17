@@ -15,9 +15,7 @@
   <div class="form-box" *ngIf="showForm">
 
     <h2>
-
       {{ isEdit ? 'Sửa nhân viên' : 'Thêm nhân viên' }}
-
     </h2>
 
     <input
@@ -26,17 +24,27 @@
       [(ngModel)]="newEmployee.fullName"
     >
 
-    <input
-      type="text"
-      placeholder="Phòng ban"
-      [(ngModel)]="newEmployee.department"
-    >
+    <!-- PHÒNG BAN -->
+
+    <select [(ngModel)]="newEmployee.departmentId">
+
+      <option [value]="1">IT</option>
+
+      <option [value]="2">HR</option>
+
+      <option [value]="3">Marketing</option>
+
+    </select>
+
+    <!-- CHỨC VỤ -->
 
     <input
       type="text"
       placeholder="Chức vụ"
       [(ngModel)]="newEmployee.position"
     >
+
+    <!-- TRẠNG THÁI -->
 
     <select [(ngModel)]="newEmployee.status">
 
@@ -49,6 +57,8 @@
       </option>
 
     </select>
+
+    <!-- BUTTON -->
 
     <button
       *ngIf="!isEdit"

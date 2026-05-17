@@ -8,15 +8,19 @@
 
     <h3>Tổng nhân viên</h3>
 
-    <p>120</p>
+    <p>
+      {{ dashboard.totalEmployees }}
+    </p>
 
   </div>
 
   <div class="card">
 
-    <h3>Đơn nghỉ phép</h3>
+    <h3>Đang làm việc</h3>
 
-    <p>15</p>
+    <p>
+      {{ dashboard.workingEmployees }}
+    </p>
 
   </div>
 
@@ -24,7 +28,39 @@
 
     <h3>Phòng ban</h3>
 
-    <p>8</p>
+    <p>
+      {{ dashboard.totalDepartments }}
+    </p>
+
+  </div>
+
+  <div class="card">
+
+    <h3>Tuyển dụng mở</h3>
+
+    <p>
+      {{ dashboard.openRecruitments }}
+    </p>
+
+  </div>
+
+  <div class="card">
+
+    <h3>Đơn nghỉ phép</h3>
+
+    <p>
+      {{ dashboard.pendingLeaveRequests }}
+    </p>
+
+  </div>
+
+  <div class="card">
+
+    <h3>Ứng viên</h3>
+
+    <p>
+      {{ dashboard.totalCandidates }}
+    </p>
 
   </div>
 

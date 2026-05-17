@@ -1,6 +1,17 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
+
+import {
+  HttpClient,
+  HttpHeaders
+} from '@angular/common/http';
 
 @Component({
   selector: 'app-performance',
@@ -9,77 +20,142 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './performance.component.html',
   styleUrl: './performance.component.css'
 })
-export class PerformanceComponent {
+export class PerformanceComponent
+implements OnInit {
+
+  http = inject(HttpClient);
+
+  apiUrl =
+    'http://localhost:5270/api/Performance';
 
   showForm = false;
 
-  performances = [
-
-    {
-      id: 1,
-      employee: 'Nguyen Van A',
-      score: 90,
-      review: 'Làm việc tốt',
-      period: '2026-Q1'
-    },
-
-    {
-      id: 2,
-      employee: 'Tran Thi B',
-      score: 75,
-      review: 'Cần cải thiện',
-      period: '2026-Q1'
-    }
-
-  ];
+  performances: any[] = [];
 
   newPerformance = {
-    employee: '',
+
+    employeeId: 0,
+
     score: 0,
+
     review: '',
+
     period: ''
+
   };
 
-  addPerformance(){
+  ngOnInit(): void {
 
-    if(
-      this.newPerformance.employee.trim() === '' ||
-      this.newPerformance.review.trim() === '' ||
-      this.newPerformance.period.trim() === ''
-    ){
-
-      alert('Vui lòng nhập đầy đủ thông tin');
-
-      return;
-
-    }
-
-    const newData = {
-
-      id: this.performances.length + 1,
-
-      ...this.newPerformance
-
-    };
-
-    this.performances.push(newData);
-
-    this.newPerformance = {
-      employee: '',
-      score: 0,
-      review: '',
-      period: ''
-    };
-
-    this.showForm = false;
+    this.loadPerformances();
 
   }
 
-  deletePerformance(id: number){
+  getHeaders(){
 
-    this.performances = this.performances.filter(
-      item => item.id !== id
-    );
+    return {
+
+      headers: new HttpHeaders({
+
+        Authorization:
+          `Bearer ${localStorage.getItem('token')}`
+
+      })
+
+    };
+
+  }
+
+  loadPerformances(){
+
+    this.http.get<any[]>(
+
+      this.apiUrl,
+
+      this.getHeaders()
+
+    ).subscribe({
+
+      next: (res) => {
+
+        console.log(res);
+
+        this.performances = res;
+
+      },
+
+      error: (err) => {
+
+        console.log(err);
+
+      }
+
+    });
+
+  }
+
+  addPerformance(){
+
+    this.http.post(
+
+      this.apiUrl,
+
+      this.newPerformance,
+
+      this.getHeaders()
+
+    ).subscribe({
+
+      next: () => {
+
+        this.loadPerformances();
+
+        this.newPerformance = {
+
+          employeeId: 0,
+
+          score: 0,
+
+          review: '',
+
+          period: ''
+
+        };
+
+        this.showForm = false;
+
+      },
+
+      error: (err) => {
+
+        alert(JSON.stringify(err.error));
+
+      }
+
+    });
+
+  }
+
+  getRank(score: number){
+
+    if(score >= 90){
+
+      return 'Xuất sắc';
+
+    }
+
+    if(score >= 75){
+
+      return 'Tốt';
+
+    }
+
+    if(score >= 50){
+
+      return 'Trung bình';
+
+    }
+
+    return 'Kém';
 
   }
 

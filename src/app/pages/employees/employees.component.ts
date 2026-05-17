@@ -28,7 +28,7 @@ export class EmployeesComponent implements OnInit {
   newEmployee = {
     id: 0,
     fullName: '',
-    department: '',
+    departmentId: 1,
     position: '',
     status: 'WORKING'
   };
@@ -36,8 +36,12 @@ export class EmployeesComponent implements OnInit {
   employees: any[] = [];
 
   ngOnInit(): void {
-      this.loadEmployees();
+
+    this.loadEmployees();
+
   }
+
+  // LOAD EMPLOYEE
 
   loadEmployees(){
 
@@ -48,7 +52,6 @@ export class EmployeesComponent implements OnInit {
         console.log(data);
 
         this.employees = data;
-        console.log(this.employees);
 
       },
 
@@ -62,7 +65,11 @@ export class EmployeesComponent implements OnInit {
 
   }
 
+  // SEARCH
+
   get filteredEmployees(){
+
+    if(!this.employees) return [];
 
     return this.employees.filter(emp =>
 
@@ -74,11 +81,12 @@ export class EmployeesComponent implements OnInit {
 
   }
 
+  // ADD EMPLOYEE
+
   addEmployee(){
 
     if(
       this.newEmployee.fullName.trim() === '' ||
-      this.newEmployee.department.trim() === '' ||
       this.newEmployee.position.trim() === ''
     ){
 
@@ -88,24 +96,36 @@ export class EmployeesComponent implements OnInit {
 
     }
 
-    this.newEmployee.id =
-      this.employees.length + 1;
+    this.employeeService.addEmployee(this.newEmployee)
+      .subscribe({
 
-    this.employees.push({
-      ...this.newEmployee
-    });
+        next: () => {
 
-    this.newEmployee = {
-      id: 0,
-      fullName: '',
-      department: '',
-      position: '',
-      status: 'WORKING'
-    };
+          this.loadEmployees();
 
-    this.showForm = false;
+          this.newEmployee = {
+            id: 0,
+            fullName: '',
+            departmentId: 1,
+            position: '',
+            status: 'WORKING'
+          };
+
+          this.showForm = false;
+
+        },
+
+        error: (err) => {
+
+          console.log(err);
+
+        }
+
+      });
 
   }
+
+  // DELETE
 
   deleteEmployee(id: number){
 
@@ -125,17 +145,51 @@ export class EmployeesComponent implements OnInit {
 
   confirmDelete(){
 
-    this.employees = this.employees.filter(
-      emp => emp.id !== this.deleteId
-    );
+    this.employeeService
+      .deleteEmployee(this.deleteId)
+      .subscribe({
 
-    this.showDeletePopup = false;
+        next: () => {
+
+          this.loadEmployees();
+
+          this.showDeletePopup = false;
+
+        },
+
+        error: (err) => {
+
+          console.log(err);
+
+        }
+
+      });
 
   }
 
+  // EDIT
+
   editEmployee(emp: any){
 
-    this.newEmployee = {...emp};
+    this.newEmployee = {
+
+      id: emp.id,
+
+      fullName: emp.fullName,
+
+      departmentId:
+
+        emp.departmentId ||
+
+        emp.department?.id ||
+
+        1,
+
+      position: emp.position,
+
+      status: emp.status
+
+    };
 
     this.showForm = true;
 
@@ -143,39 +197,48 @@ export class EmployeesComponent implements OnInit {
 
   }
 
+  // UPDATE
+
   updateEmployee(){
 
-    if(
-      this.newEmployee.fullName.trim() === '' ||
-      this.newEmployee.department.trim() === '' ||
-      this.newEmployee.position.trim() === ''
-    ){
+    this.employeeService
+      .updateEmployee(
+        this.newEmployee.id,
+        this.newEmployee
+      )
+      .subscribe({
 
-      alert('Vui lòng nhập đầy đủ thông tin');
+        next: () => {
 
-      return;
+          this.loadEmployees();
 
-    }
+          this.showForm = false;
 
-    const index = this.employees.findIndex(
-      emp => emp.id === this.newEmployee.id
-    );
+          this.isEdit = false;
 
-    this.employees[index] = {
-      ...this.newEmployee
-    };
+          this.newEmployee = {
 
-    this.newEmployee = {
-      id: 0,
-      fullName: '',
-      department: '',
-      position: '',
-      status: 'WORKING'
-    };
+            id: 0,
 
-    this.showForm = false;
+            fullName: '',
 
-    this.isEdit = false;
+            departmentId: 1,
+
+            position: '',
+
+            status: 'WORKING'
+
+          };
+
+        },
+
+        error: (err) => {
+
+          console.log(err);
+
+        }
+
+      });
 
   }
 

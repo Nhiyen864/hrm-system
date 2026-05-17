@@ -12,12 +12,15 @@
 
   <!-- FORM -->
 
-  <div class="form-box" *ngIf="showForm">
+  <div
+    class="form-box"
+    *ngIf="showForm"
+  >
 
     <input
       type="text"
       placeholder="Họ tên"
-      [(ngModel)]="newCandidate.full_name"
+      [(ngModel)]="newCandidate.fullName"
     >
 
     <input
@@ -33,9 +36,9 @@
     >
 
     <input
-      type="text"
-      placeholder="Vị trí ứng tuyển"
-      [(ngModel)]="newCandidate.position"
+      type="number"
+      placeholder="Recruitment ID"
+      [(ngModel)]="newCandidate.recruitmentId"
     >
 
     <button (click)="addCandidate()">
@@ -53,11 +56,17 @@
       <tr>
 
         <th>ID</th>
+
         <th>Họ tên</th>
+
         <th>Email</th>
+
         <th>SĐT</th>
+
         <th>Vị trí</th>
+
         <th>Trạng thái</th>
+
         <th>Hành động</th>
 
       </tr>
@@ -70,34 +79,50 @@
 
         <td>{{ item.id }}</td>
 
-        <td>{{ item.full_name }}</td>
+        <td>{{ item.fullName }}</td>
 
         <td>{{ item.email }}</td>
 
         <td>{{ item.phone }}</td>
 
-        <td>{{ item.position }}</td>
+        <td>{{ item.recruitmentTitle }}</td>
 
         <td>
 
           <span class="status">
-            {{ item.status }}
+
+            {{
+              item.status === 'Applied'
+                ? 'Đã ứng tuyển'
+                : item.status === 'Interviewing'
+                ? 'Phỏng vấn'
+                : item.status === 'Hired'
+                ? 'Đã tuyển'
+                : 'Từ chối'
+            }}
+
           </span>
 
         </td>
 
-        <td>
+        <td class="action-buttons">
 
           <button
             class="hire-btn"
-            (click)="hireCandidate(item)"
+            (click)="updateStatus(
+              item.id,
+              'Hired'
+            )"
           >
             Tuyển
           </button>
 
           <button
             class="reject-btn"
-            (click)="rejectCandidate(item)"
+            (click)="updateStatus(
+              item.id,
+              'Rejected'
+            )"
           >
             Từ chối
           </button>

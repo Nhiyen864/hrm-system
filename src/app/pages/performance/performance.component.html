@@ -12,12 +12,15 @@
 
   <!-- FORM -->
 
-  <div class="form-box" *ngIf="showForm">
+  <div
+    class="form-box"
+    *ngIf="showForm"
+  >
 
     <input
-      type="text"
-      placeholder="Tên nhân viên"
-      [(ngModel)]="newPerformance.employee"
+      type="number"
+      placeholder="Employee ID"
+      [(ngModel)]="newPerformance.employeeId"
     >
 
     <input
@@ -53,11 +56,16 @@
       <tr>
 
         <th>ID</th>
+
         <th>Nhân viên</th>
+
         <th>Điểm</th>
+
+        <th>Xếp loại</th>
+
         <th>Nhận xét</th>
+
         <th>Kỳ đánh giá</th>
-        <th>Hành động</th>
 
       </tr>
 
@@ -69,24 +77,23 @@
 
         <td>{{ item.id }}</td>
 
-        <td>{{ item.employee }}</td>
+        <td>{{ item.employeeName }}</td>
 
         <td>{{ item.score }}</td>
+
+        <td>
+
+          <span class="rank">
+
+            {{ getRank(item.score) }}
+
+          </span>
+
+        </td>
 
         <td>{{ item.review }}</td>
 
         <td>{{ item.period }}</td>
-
-        <td>
-
-          <button
-            class="delete-btn"
-            (click)="deletePerformance(item.id)"
-          >
-            Xóa
-          </button>
-
-        </td>
 
       </tr>
 

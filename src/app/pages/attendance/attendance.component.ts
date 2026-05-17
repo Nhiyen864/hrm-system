@@ -1,6 +1,17 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
+
+import {
+  HttpClient,
+  HttpHeaders
+} from '@angular/common/http';
 
 @Component({
   selector: 'app-attendance',
@@ -9,69 +20,138 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './attendance.component.html',
   styleUrl: './attendance.component.css'
 })
-export class AttendanceComponent {
+export class AttendanceComponent
+implements OnInit {
 
-  attendances = [
+  http = inject(HttpClient);
 
-    {
-      id: 1,
-      employee: 'Nguyen Van A',
-      date: '2025-07-01',
-      checkIn: '08:00',
-      checkOut: '17:00'
-    },
+  apiUrl =
+    'http://localhost:5270/api/Attendance';
 
-    {
-      id: 2,
-      employee: 'Tran Thi B',
-      date: '2025-07-01',
-      checkIn: '08:15',
-      checkOut: '17:10'
-    }
+  attendances: any[] = [];
 
-  ];
+  employeeId = 0;
 
-  newAttendance = {
-    employee: '',
-    date: '',
-    checkIn: '',
-    checkOut: ''
-  };
+  ngOnInit(): void {
 
-  showForm = false;
+    this.loadAttendance();
 
-  addAttendance(){
+  }
 
-    if(
-      this.newAttendance.employee.trim() === '' ||
-      this.newAttendance.date === '' ||
-      this.newAttendance.checkIn === ''
-    ){
+  getHeaders(){
 
-      alert('Vui lòng nhập đầy đủ thông tin');
+    return {
+
+      headers: new HttpHeaders({
+
+        Authorization:
+          `Bearer ${localStorage.getItem('token')}`
+
+      })
+
+    };
+
+  }
+
+  loadAttendance(){
+
+    if(this.employeeId === 0){
 
       return;
 
     }
 
-    const newData = {
+    this.http.get<any[]>(
 
-      id: this.attendances.length + 1,
+      `${this.apiUrl}/employee/${this.employeeId}`,
 
-      ...this.newAttendance
+      this.getHeaders()
 
-    };
+    ).subscribe({
 
-    this.attendances.push(newData);
+      next: (res) => {
 
-    this.newAttendance = {
-      employee: '',
-      date: '',
-      checkIn: '',
-      checkOut: ''
-    };
+        console.log(res);
 
-    this.showForm = false;
+        this.attendances = res;
+
+      },
+
+      error: (err) => {
+
+        console.log(err);
+
+      }
+
+    });
+
+  }
+
+  checkIn(){
+
+    this.http.post(
+
+      `${this.apiUrl}/check-in`,
+
+      {
+
+        employeeId: this.employeeId
+
+      },
+
+      this.getHeaders()
+
+    ).subscribe({
+
+      next: () => {
+
+        alert('Check in thành công');
+
+        this.loadAttendance();
+
+      },
+
+      error: (err) => {
+
+        alert(err.error);
+
+      }
+
+    });
+
+  }
+
+  checkOut(){
+
+    this.http.post(
+
+      `${this.apiUrl}/check-out`,
+
+      {
+
+        employeeId: this.employeeId
+
+      },
+
+      this.getHeaders()
+
+    ).subscribe({
+
+      next: () => {
+
+        alert('Check out thành công');
+
+        this.loadAttendance();
+
+      },
+
+      error: (err) => {
+
+        alert(err.error);
+
+      }
+
+    });
 
   }
 

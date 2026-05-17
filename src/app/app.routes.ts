@@ -8,11 +8,12 @@ import { LeaveRequestsComponent } from './pages/leave-requests/leave-requests.co
 import { PerformanceComponent } from './pages/performance/performance.component';
 import { RecruitmentComponent } from './pages/recruitment/recruitment.component';
 import { CandidatesComponent } from './pages/candidates/candidates.component';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
 
   {
-    path: '',
+    path: 'login',
     component: LoginComponent
   },
 
@@ -54,5 +55,11 @@ export const routes: Routes = [
   {
     path: 'candidates',
     component: CandidatesComponent
+  }, 
+
+  {
+    path: 'employees',
+    component: EmployeesComponent,
+    canActivate: [authGuard]
   }
 ];

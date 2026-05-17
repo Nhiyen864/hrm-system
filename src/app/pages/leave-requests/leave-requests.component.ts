@@ -1,6 +1,17 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
+
+import {
+  HttpClient,
+  HttpHeaders
+} from '@angular/common/http';
 
 @Component({
   selector: 'app-leave-requests',
@@ -9,86 +20,151 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './leave-requests.component.html',
   styleUrl: './leave-requests.component.css'
 })
-export class LeaveRequestsComponent {
+export class LeaveRequestsComponent
+implements OnInit {
+
+  http = inject(HttpClient);
+
+  apiUrl =
+    'http://localhost:5270/api/LeaveRequest';
 
   showForm = false;
 
-  leaveRequests = [
-
-    {
-      id: 1,
-      employee: 'Nguyen Van A',
-      startDate: '2025-07-01',
-      endDate: '2025-07-03',
-      reason: 'Du lịch',
-      status: 'Chờ duyệt'
-    },
-
-    {
-      id: 2,
-      employee: 'Tran Thi B',
-      startDate: '2025-07-05',
-      endDate: '2025-07-06',
-      reason: 'Bệnh',
-      status: 'Đã duyệt'
-    }
-
-  ];
+  leaveRequests: any[] = [];
 
   newLeave = {
-    employee: '',
+
+    employeeId: 0,
+
     startDate: '',
+
     endDate: '',
-    reason: '',
-    status: 'Chờ duyệt'
+
+    reason: ''
+
   };
+
+  ngOnInit(): void {
+
+    this.loadLeaveRequests();
+
+  }
+
+  getHeaders(){
+
+    return {
+
+      headers: new HttpHeaders({
+
+        Authorization:
+          `Bearer ${localStorage.getItem('token')}`
+
+      })
+
+    };
+
+  }
+
+  loadLeaveRequests(){
+
+    this.http.get<any[]>(
+
+      this.apiUrl,
+
+      this.getHeaders()
+
+    ).subscribe({
+
+      next: (res) => {
+
+        console.log(res);
+
+        this.leaveRequests = res;
+
+      },
+
+      error: (err) => {
+
+        console.log(err);
+
+      }
+
+    });
+
+  }
 
   addLeave(){
 
-    if(
-      this.newLeave.employee.trim() === '' ||
-      this.newLeave.startDate === '' ||
-      this.newLeave.endDate === '' ||
-      this.newLeave.reason.trim() === ''
-    ){
+    this.http.post(
 
-      alert('Vui lòng nhập đầy đủ thông tin');
+      this.apiUrl,
 
-      return;
+      this.newLeave,
 
-    }
+      this.getHeaders()
 
-    const newData = {
+    ).subscribe({
 
-      id: this.leaveRequests.length + 1,
+      next: () => {
 
-      ...this.newLeave
+        this.loadLeaveRequests();
 
-    };
+        this.newLeave = {
 
-    this.leaveRequests.push(newData);
+          employeeId: 0,
 
-    this.newLeave = {
-      employee: '',
-      startDate: '',
-      endDate: '',
-      reason: '',
-      status: 'Chờ duyệt'
-    };
+          startDate: '',
 
-    this.showForm = false;
+          endDate: '',
+
+          reason: ''
+
+        };
+
+        this.showForm = false;
+
+      },
+
+      error: (err) => {
+
+        alert(JSON.stringify(err.error));
+
+      }
+
+    });
 
   }
 
-  approveLeave(item: any){
+  updateStatus(
+    id: number,
+    status: string
+  ){
 
-    item.status = 'Đã duyệt';
+    this.http.put(
 
-  }
+      `${this.apiUrl}/${id}/status`,
 
-  rejectLeave(item: any){
+      {
+        status: status
+      },
 
-    item.status = 'Từ chối';
+      this.getHeaders()
+
+    ).subscribe({
+
+      next: () => {
+
+        this.loadLeaveRequests();
+
+      },
+
+      error: (err) => {
+
+        console.log(err);
+
+      }
+
+    });
 
   }
 

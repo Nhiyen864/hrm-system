@@ -10,7 +10,10 @@
 
   </div>
 
-  <div class="form-box" *ngIf="showForm">
+  <div
+    class="form-box"
+    *ngIf="showForm"
+  >
 
     <input
       type="text"
@@ -31,7 +34,9 @@
       <tr>
 
         <th>ID</th>
+
         <th>Tên phòng ban</th>
+
         <th>Hành động</th>
 
       </tr>
@@ -42,9 +47,9 @@
 
       <tr *ngFor="let dept of departments">
 
-        <td>{{dept.id}}</td>
+        <td>{{ dept.id }}</td>
 
-        <td>{{dept.name}}</td>
+        <td>{{ dept.name }}</td>
 
         <td>
 

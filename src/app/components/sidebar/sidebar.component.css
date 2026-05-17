@@ -5,6 +5,10 @@
   color: white;
   padding: 24px;
   position: fixed;
+
+  box-sizing: border-box;
+
+  overflow-y: auto;
 }
 
 .sidebar h2{
@@ -14,15 +18,55 @@
 
 .sidebar a{
   display: block;
+
   color: #cbd5e1;
+
   text-decoration: none;
+
   padding: 14px;
+
   margin-bottom: 12px;
+
   border-radius: 10px;
+
   transition: 0.3s;
+
+  font-size: 16px;
 }
 
 .sidebar a:hover{
   background: #1e293b;
   color: white;
+}
+
+.logout-btn{
+
+  width: 100%;
+
+  margin-top: 30px;
+
+  padding: 14px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #1e293b;
+
+  color: #cbd5e1;
+
+  cursor: pointer;
+
+  font-size: 16px;
+
+  transition: 0.3s;
+
+}
+
+.logout-btn:hover{
+
+  background: #334155;
+
+  color: white;
+
 }

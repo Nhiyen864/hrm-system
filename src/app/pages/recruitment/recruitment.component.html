@@ -12,7 +12,10 @@
 
   <!-- FORM -->
 
-  <div class="form-box" *ngIf="showForm">
+  <div
+    class="form-box"
+    *ngIf="showForm"
+  >
 
     <input
       type="text"
@@ -47,10 +50,15 @@
       <tr>
 
         <th>ID</th>
+
         <th>Tiêu đề</th>
+
         <th>Mô tả</th>
+
         <th>Phòng ban</th>
+
         <th>Trạng thái</th>
+
         <th>Hành động</th>
 
       </tr>
@@ -72,25 +80,24 @@
         <td>
 
           <span class="status">
-            {{ item.status }}
+
+            {{
+              item.status === 'OPEN'
+                ? 'Đang tuyển'
+                : 'Đã đóng'
+            }}
+
           </span>
 
         </td>
 
-        <td>
+        <td class="action-buttons">
 
           <button
             class="close-btn"
-            (click)="closeRecruitment(item)"
+            (click)="closeRecruitment(item.id)"
           >
             Đóng
-          </button>
-
-          <button
-            class="delete-btn"
-            (click)="deleteRecruitment(item.id)"
-          >
-            Xóa
           </button>
 
         </td>

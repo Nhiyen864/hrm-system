@@ -1,6 +1,17 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
+
+import {
+  HttpClient,
+  HttpHeaders
+} from '@angular/common/http';
 
 @Component({
   selector: 'app-recruitment',
@@ -9,83 +20,142 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './recruitment.component.html',
   styleUrl: './recruitment.component.css'
 })
-export class RecruitmentComponent {
+export class RecruitmentComponent
+implements OnInit {
+
+  http = inject(HttpClient);
+
+  apiUrl =
+    'http://localhost:5270/api/Recruitment';
 
   showForm = false;
 
-  recruitments = [
-
-    {
-      id: 1,
-      title: 'Frontend Developer',
-      description: 'Angular Developer',
-      department: 'IT',
-      status: 'Đang tuyển'
-    },
-
-    {
-      id: 2,
-      title: 'HR Staff',
-      description: 'Tuyển dụng nhân sự',
-      department: 'HR',
-      status: 'Đã đóng'
-    }
-
-  ];
+  recruitments: any[] = [];
 
   newRecruitment = {
+
     title: '',
+
     description: '',
-    department: '',
-    status: 'Đang tuyển'
+
+    department: ''
+
   };
+
+  ngOnInit(): void {
+
+    this.loadRecruitments();
+
+  }
+
+  getHeaders(){
+
+    return {
+
+      headers: new HttpHeaders({
+
+        Authorization:
+          `Bearer ${localStorage.getItem('token')}`
+
+      })
+
+    };
+
+  }
+
+  loadRecruitments(){
+
+    this.http.get<any[]>(
+
+      this.apiUrl,
+
+      this.getHeaders()
+
+    ).subscribe({
+
+      next: (res) => {
+
+        console.log(res);
+
+        this.recruitments = res;
+
+      },
+
+      error: (err) => {
+
+        console.log(err);
+
+      }
+
+    });
+
+  }
 
   addRecruitment(){
 
-    if(
-      this.newRecruitment.title.trim() === '' ||
-      this.newRecruitment.description.trim() === '' ||
-      this.newRecruitment.department.trim() === ''
-    ){
+    this.http.post(
 
-      alert('Vui lòng nhập đầy đủ thông tin');
+      this.apiUrl,
 
-      return;
+      this.newRecruitment,
 
-    }
+      this.getHeaders()
 
-    const newData = {
+    ).subscribe({
 
-      id: this.recruitments.length + 1,
+      next: () => {
 
-      ...this.newRecruitment
+        this.loadRecruitments();
 
-    };
+        this.newRecruitment = {
 
-    this.recruitments.push(newData);
+          title: '',
 
-    this.newRecruitment = {
-      title: '',
-      description: '',
-      department: '',
-      status: 'Đang tuyển'
-    };
+          description: '',
 
-    this.showForm = false;
+          department: ''
+
+        };
+
+        this.showForm = false;
+
+      },
+
+      error: (err) => {
+
+        console.log(err);
+
+      }
+
+    });
 
   }
 
-  closeRecruitment(item: any){
+  closeRecruitment(id: number){
 
-    item.status = 'Đã đóng';
+    this.http.put(
 
-  }
+      `${this.apiUrl}/${id}/close`,
 
-  deleteRecruitment(id: number){
+      {},
 
-    this.recruitments = this.recruitments.filter(
-      item => item.id !== id
-    );
+      this.getHeaders()
+
+    ).subscribe({
+
+      next: () => {
+
+        this.loadRecruitments();
+
+      },
+
+      error: (err) => {
+
+        console.log(err);
+
+      }
+
+    });
 
   }
 

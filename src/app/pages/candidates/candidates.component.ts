@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-candidates',
@@ -9,88 +10,152 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './candidates.component.html',
   styleUrl: './candidates.component.css'
 })
-export class CandidatesComponent {
+export class CandidatesComponent
+implements OnInit {
+
+  http = inject(HttpClient);
+
+  apiUrl =
+    'http://localhost:5270/api/Candidate';
 
   showForm = false;
 
-  candidates = [
-
-    {
-      id: 1,
-      full_name: 'Nguyen Van A',
-      email: 'a@gmail.com',
-      phone: '0123456789',
-      position: 'Frontend Developer',
-      status: 'Đã ứng tuyển'
-    },
-
-    {
-      id: 2,
-      full_name: 'Tran Thi B',
-      email: 'b@gmail.com',
-      phone: '0912345678',
-      position: 'HR Staff',
-      status: 'Phỏng vấn'
-    }
-
-  ];
+  candidates: any[] = [];
 
   newCandidate = {
-    full_name: '',
+
+    fullName: '',
+
     email: '',
+
     phone: '',
-    position: '',
-    status: 'Đã ứng tuyển'
+
+    recruitmentId: 0
+
   };
+
+  ngOnInit(): void {
+
+    this.loadCandidates();
+
+  }
+
+  getHeaders(){
+
+    return {
+
+      headers: new HttpHeaders({
+
+        Authorization:
+          `Bearer ${localStorage.getItem('token')}`
+
+      })
+
+    };
+
+  }
+
+  loadCandidates(){
+
+    this.http.get<any[]>(
+
+      this.apiUrl,
+
+      this.getHeaders()
+
+    ).subscribe({
+
+      next: (res) => {
+
+        console.log(res);
+
+        this.candidates = res;
+
+      },
+
+      error: (err) => {
+
+        console.log(err);
+
+      }
+
+    });
+
+  }
 
   addCandidate(){
 
-    if(
-      this.newCandidate.full_name.trim() === '' ||
-      this.newCandidate.email.trim() === '' ||
-      this.newCandidate.phone.trim() === '' ||
-      this.newCandidate.position.trim() === ''
-    ){
+    this.http.post(
 
-      alert('Vui lòng nhập đầy đủ thông tin');
+      this.apiUrl,
 
-      return;
+      this.newCandidate,
 
-    }
+      this.getHeaders()
 
-    const newData = {
+    ).subscribe({
 
-      id: this.candidates.length + 1,
+      next: () => {
 
-      ...this.newCandidate
+        this.loadCandidates();
 
-    };
+        this.newCandidate = {
 
-    this.candidates.push(newData);
+          fullName: '',
 
-    this.newCandidate = {
-      full_name: '',
-      email: '',
-      phone: '',
-      position: '',
-      status: 'Đã ứng tuyển'
-    };
+          email: '',
 
-    this.showForm = false;
+          phone: '',
 
-  }
+          recruitmentId: 0
 
-  hireCandidate(item: any){
+        };
 
-    item.status = 'Đã tuyển';
+        this.showForm = false;
 
-  }
+      },
 
-  rejectCandidate(item: any){
+      error: (err) => {
 
-    item.status = 'Từ chối';
+        console.log(err);
+
+      }
+
+    });
 
   }
 
-  
+  updateStatus(
+    id: number,
+    status: string
+  ){
+
+    this.http.put(
+
+      `${this.apiUrl}/${id}/status`,
+
+      {
+        status: status
+      },
+
+      this.getHeaders()
+
+    ).subscribe({
+
+      next: () => {
+
+        this.loadCandidates();
+
+      },
+
+      error: (err) => {
+
+        console.log(err);
+
+      }
+
+    });
+
+  }
+
 }

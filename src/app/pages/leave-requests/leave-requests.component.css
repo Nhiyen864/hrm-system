@@ -88,3 +88,29 @@ td{
   border-radius: 8px;
   cursor: pointer;
 }
+
+.action-buttons{
+
+  display: flex;
+
+  gap: 10px;
+
+}
+
+.status{
+
+  display: inline-block;
+
+  white-space: nowrap;
+
+  padding: 8px 14px;
+
+  border-radius: 20px;
+
+  background: #fef3c7;
+
+  color: #92400e;
+
+  font-weight: 600;
+
+}

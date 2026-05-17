@@ -4,39 +4,34 @@
 
     <h1>Quản lý chấm công</h1>
 
-    <button (click)="showForm = true">
-      + Chấm công
-    </button>
-
   </div>
 
-  <!-- FORM -->
+  <!-- ACTIONS -->
 
-  <div class="form-box" *ngIf="showForm">
-
-    <input
-      type="text"
-      placeholder="Tên nhân viên"
-      [(ngModel)]="newAttendance.employee"
-    >
+  <div class="form-box">
 
     <input
-      type="date"
-      [(ngModel)]="newAttendance.date"
+      type="number"
+      placeholder="Employee ID"
+      [(ngModel)]="employeeId"
     >
 
-    <input
-      type="time"
-      [(ngModel)]="newAttendance.checkIn"
-    >
+    <button (click)="loadAttendance()">
+      Xem lịch sử
+    </button>
 
-    <input
-      type="time"
-      [(ngModel)]="newAttendance.checkOut"
+    <button
+      class="checkin-btn"
+      (click)="checkIn()"
     >
+      Check In
+    </button>
 
-    <button (click)="addAttendance()">
-      Lưu
+    <button
+      class="checkout-btn"
+      (click)="checkOut()"
+    >
+      Check Out
     </button>
 
   </div>
@@ -50,9 +45,11 @@
       <tr>
 
         <th>ID</th>
-        <th>Nhân viên</th>
+
         <th>Ngày</th>
+
         <th>Check In</th>
+
         <th>Check Out</th>
 
       </tr>
@@ -65,13 +62,17 @@
 
         <td>{{ item.id }}</td>
 
-        <td>{{ item.employee }}</td>
+        <td>
+          {{ item.workDate | date:'dd/MM/yyyy' }}
+        </td>
 
-        <td>{{ item.date }}</td>
+        <td>
+          {{ item.checkIn }}
+        </td>
 
-        <td>{{ item.checkIn }}</td>
-
-        <td>{{ item.checkOut }}</td>
+        <td>
+          {{ item.checkOut || '---' }}
+        </td>
 
       </tr>
 

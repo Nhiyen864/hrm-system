@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -12,25 +13,61 @@ import { Router } from '@angular/router';
 export class LoginComponent {
 
   username = '';
+
   password = '';
 
-  constructor(private router: Router){}
+  router = inject(Router);
+
+  http = inject(HttpClient);
 
   login(){
 
-    if(
-      this.username === 'admin' &&
-      this.password === '123456'
-    ){
+    const data = {
 
-      this.router.navigate(['/dashboard']);
+      username: this.username,
 
-    }
-    else{
+      password: this.password
 
-      alert('Sai tài khoản hoặc mật khẩu');
+    };
 
-    }
+    this.http.post<any>(
+
+      'http://localhost:5270/api/Auth/login',
+
+      data
+
+    )
+    .subscribe({
+
+      next: (res) => {
+
+        console.log(res);
+
+        // SAVE TOKEN
+
+        localStorage.setItem(
+
+          'token',
+
+          res.token
+
+        );
+
+        // GO DASHBOARD
+
+        this.router.navigate(['/dashboard']);
+
+      },
+
+      error: (err) => {
+
+        console.log(err);
+
+        alert(JSON.stringify(err.error));
+
+      }
+
+    });
 
   }
 
