@@ -1,85 +1,43 @@
+// src/app/services/employee.service.ts
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EmployeeService {
 
-  private apiUrl =
-    'http://localhost:5270/api/Employees';
+  private http = inject(HttpClient);
+  private api = 'http://localhost:5270/api/employees';
 
-  http = inject(HttpClient);
-
-  getHeaders(){
-
+  private getHeaders() {
+    const token = localStorage.getItem('token');
     return {
-
       headers: new HttpHeaders({
-
-        Authorization:
-          `Bearer ${localStorage.getItem('token')}`
-
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       })
-
     };
-
   }
 
-  getEmployees(): Observable<any>{
-
-    return this.http.get(
-
-      this.apiUrl,
-
-      this.getHeaders()
-
-    );
-
+  getEmployees(): Observable<any> {
+    return this.http.get(this.api, this.getHeaders());
   }
 
-  addEmployee(data: any): Observable<any>{
-
-    return this.http.post(
-
-      this.apiUrl,
-
-      data,
-
-      this.getHeaders()
-
-    );
-
+  getEmployeeById(id: number): Observable<any> {
+    return this.http.get(`${this.api}/${id}`, this.getHeaders());
   }
 
-  updateEmployee(
-    id: number,
-    data: any
-  ): Observable<any>{
-
-    return this.http.put(
-
-      `${this.apiUrl}/${id}`,
-
-      data,
-
-      this.getHeaders()
-
-    );
-
+  addEmployee(data: any): Observable<any> {
+    return this.http.post(this.api, data, this.getHeaders());
   }
 
-  deleteEmployee(id: number): Observable<any>{
-
-    return this.http.delete(
-
-      `${this.apiUrl}/${id}`,
-
-      this.getHeaders()
-
-    );
-
+  updateEmployee(id: number, data: any): Observable<any> {
+    return this.http.put(`${this.api}/${id}`, data, this.getHeaders());
   }
 
+  deleteEmployee(id: number): Observable<any> {
+    return this.http.delete(`${this.api}/${id}`, this.getHeaders());
+  }
 }

@@ -4,101 +4,64 @@
 
     <h1>Đánh giá nhân viên</h1>
 
-    <button (click)="showForm = true">
+    <button class="save-btn" (click)="showForm = true">
       + Thêm đánh giá
     </button>
-
   </div>
 
   <!-- FORM -->
 
-  <div
-    class="form-box"
-    *ngIf="showForm"
-  >
+  <div class="form-box" *ngIf="showForm">
+    <h2>Thông tin đánh giá</h2>
+    <div class="form-group">
+        <label>Mã nhân viên</label>
+        <input type="number" placeholder="Employee ID"[(ngModel)]="newPerformance.employeeId">
 
-    <input
-      type="number"
-      placeholder="Employee ID"
-      [(ngModel)]="newPerformance.employeeId"
-    >
+    </div>
+    <div class="form-group">
+        <label>Điểm đánh giá</label>
+        <input type="number" placeholder="0 - 100" [(ngModel)]="newPerformance.score">
+    </div>
+    <div class="form-group">
+        <label>Nhận xét</label>
+        <input type="text" placeholder="Nhận xét" [(ngModel)]="newPerformance.review">
+    </div>
+    <div class="form-group">
+        <label>Kỳ đánh giá</label>
+        <input type="text" placeholder="Kỳ đánh giá" [(ngModel)]="newPerformance.period">
+    </div>
 
-    <input
-      type="number"
-      placeholder="Điểm"
-      [(ngModel)]="newPerformance.score"
-    >
-
-    <input
-      type="text"
-      placeholder="Nhận xét"
-      [(ngModel)]="newPerformance.review"
-    >
-
-    <input
-      type="text"
-      placeholder="Kỳ đánh giá"
-      [(ngModel)]="newPerformance.period"
-    >
-
-    <button (click)="addPerformance()">
-      Lưu
-    </button>
-
+     <div class="form-actions">
+    <button class="save-btn" (click)="addPerformance()"> Lưu </button>
+      </div>
   </div>
 
   <!-- TABLE -->
 
   <table>
-
     <thead>
-
       <tr>
-
-        <th>ID</th>
-
+        <th>STT</th>
         <th>Nhân viên</th>
-
         <th>Điểm</th>
-
         <th>Xếp loại</th>
-
         <th>Nhận xét</th>
-
         <th>Kỳ đánh giá</th>
-
       </tr>
-
     </thead>
-
     <tbody>
-
-      <tr *ngFor="let item of performances">
-
-        <td>{{ item.id }}</td>
-
+      <tr *ngFor="let item of performances; let i = index">
+        <td>{{ i + 1 }}</td>
         <td>{{ item.employeeName }}</td>
-
         <td>{{ item.score }}</td>
-
         <td>
-
           <span class="rank">
-
             {{ getRank(item.score) }}
-
           </span>
-
         </td>
-
         <td>{{ item.review }}</td>
-
         <td>{{ item.period }}</td>
-
       </tr>
-
     </tbody>
-
   </table>
-
 </div>

@@ -1,71 +1,50 @@
 <div class="department-page">
 
   <div class="top-bar">
-
     <h1>Quản lý phòng ban</h1>
-
-    <button (click)="showForm = true">
-      + Thêm phòng ban
-    </button>
-
+    <button (click)="showForm = true">+ Thêm phòng ban </button>
   </div>
+<!-- FORM THÊM / SỬA -->
+  <div class="form-box" *ngIf="showForm">
+    <h2>{{ isEdit ? 'Sửa phòng ban' : 'Thêm phòng ban mới' }}</h2>
 
-  <div
-    class="form-box"
-    *ngIf="showForm"
-  >
+    <div class="form-group">
+      <label>Tên phòng ban</label>
+      <input type="text" placeholder="Nhập tên phòng ban" [(ngModel)]="newDepartment.name">
+    </div>
 
-    <input
-      type="text"
-      placeholder="Tên phòng ban"
-      [(ngModel)]="newDepartment"
-    >
+    <div class="form-group">
+      <label>Mô tả phòng ban</label>
+      <textarea placeholder="Nhập mô tả phòng ban" rows="4" [(ngModel)]="newDepartment.description"></textarea>
+    </div>
 
-    <button (click)="addDepartment()">
-      Lưu
-    </button>
-
+    <div class="form-buttons">
+      <button class="btn-cancel" (click)="resetForm()">Hủy</button>
+      <button class="btn-save" (click)="saveDepartment()">
+        {{ isEdit ? 'Cập nhật' : 'Lưu phòng ban' }}
+      </button>
+    </div>
   </div>
 
   <table>
 
     <thead>
-
       <tr>
-
-        <th>ID</th>
-
+        <th>STT</th>
         <th>Tên phòng ban</th>
-
         <th>Hành động</th>
-
       </tr>
-
     </thead>
-
     <tbody>
-
-      <tr *ngFor="let dept of departments">
-
-        <td>{{ dept.id }}</td>
-
+      <tr *ngFor="let dept of departments; let i = index">
+        <td>{{ i + 1 }}</td>
         <td>{{ dept.name }}</td>
-
         <td>
-
-          <button
-            class="delete-btn"
-            (click)="deleteDepartment(dept.id)"
-          >
-            Xóa
-          </button>
-
+          <button class="btn btn-edit" (click)="editDepartment(dept)" title="Sửa phòng ban">✏️ Sửa</button>
+          <button class="btn btn-delete" (click)="deleteDepartment(dept.id)"> Xóa </button>
         </td>
-
       </tr>
-
     </tbody>
-
   </table>
 
 </div>

@@ -19,134 +19,141 @@ implements OnInit {
     'http://localhost:5270/api/Department';
 
   showForm = false;
-
-  newDepartment = '';
-
+  isEdit = false;
   departments: any[] = [];
+  filteredDepartments: any[] = [];
+
+  newDepartment = {
+    id: 0,
+    name: '',
+    description: ''
+  };
+  showDetailModal = false;
+  selectedDepartment: any = null;
 
   ngOnInit(): void {
-
-    
-
     this.loadDepartments();
-
   }
 
   getHeaders(){
-
     return {
-
       headers: new HttpHeaders({
-
         Authorization:
           `Bearer ${localStorage.getItem('token')}`
-
       })
-
     };
-
   }
 
-  loadDepartments(){
+ loadDepartments(){
+  this.http.get(this.apiUrl, this.getHeaders()).subscribe({
+    next: (res: any) => {
+      console.log('Departments loaded:', res);
+      this.departments = Array.isArray(res) ? res : (res.data || res);
+      this.filteredDepartments = [...this.departments];
+    },
+    error: (err) => {
+      console.error(err);
+      alert('Không thể tải danh sách phòng ban');
+    }
+  });
+}
 
-    this.http.get<any[]>(
+  saveDepartment() {
+    if (!this.newDepartment.name?.trim()) {
+      alert('Vui lòng nhập tên phòng ban');
+      return;
+    }
 
-      this.apiUrl,
+     const body = {
+    name: this.newDepartment.name,
+    description: this.newDepartment.description
+  };
 
-      this.getHeaders()
-
+    if (this.isEdit) {
+    this.http.put(`${this.apiUrl}/${this.newDepartment.id}`,
+      body, this.getHeaders()
     ).subscribe({
-
-      next: (res) => {
-
-        console.log(res);
-
-        this.departments = res;
-
-      },
-
-      error: (err) => {
-
-        alert(JSON.stringify(err));
-
-      }
-
-    });
-
-  }
-
-  addDepartment(){
-
-    const data = {
-
-      name: this.newDepartment
-
-    };
-
-    this.http.post(
-
-      this.apiUrl,
-
-      data,
-
-      this.getHeaders()
-
-    ).subscribe({
-
       next: () => {
-
+        alert('Cập nhật phòng ban thành công');
         this.loadDepartments();
-
-        this.newDepartment = '';
-
-        this.showForm = false;
-
+        this.resetForm();
       },
 
       error: (err) => {
-
         console.log(err);
-
+        alert(
+          err.error.message ||
+          'Update thất bại'
+        );
       }
-
     });
 
+  } else {
+      // Create
+      this.http.post(this.apiUrl, this.newDepartment, this.getHeaders())
+        .subscribe({
+          next: () => this.afterSave(),
+          error: (err) => console.error(err)
+        });
+    }
   }
+  private afterSave() {
+    this.loadDepartments();
+    this.resetForm();
+    alert(this.isEdit ? 'Cập nhật phòng ban thành công!' : 'Thêm phòng ban thành công!');
+  }
+
+  editDepartment(dept: any) {
+  console.log('Editing department full data:', dept);
+
+  this.newDepartment = {
+    id: dept.id,
+    name: dept.name,
+    description: dept.description || ''
+  };
+
+  this.showForm = true;
+  this.isEdit = true;
+}
 
   deleteDepartment(id: number){
-
     const confirmDelete = confirm(
       'Bạn có chắc chắn muốn xóa phòng ban này?'
     );
-
     if(!confirmDelete){
-
       return;
-
     }
-
     this.http.delete(
-
       `${this.apiUrl}/${id}`,
-
       this.getHeaders()
-
     ).subscribe({
-
       next: () => {
-
         this.loadDepartments();
-
       },
-
       error: (err) => {
-
         console.log(err);
-
       }
-
     });
-
   }
 
+  viewDetail(dept: any): void {
+    this.selectedDepartment = dept;
+    this.showDetailModal = true;
+  }
+
+  closeDetailModal(): void {
+    this.showDetailModal = false;
+    this.selectedDepartment = null;
+  }
+
+  resetForm() {
+    this.newDepartment = {
+      id: 0,
+      name: '',
+      description: ''
+    };
+    this.showForm = false;
+    this.isEdit = false;
+  }
 }
+

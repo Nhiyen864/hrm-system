@@ -1,111 +1,73 @@
 <div class="recruitment-page">
 
   <div class="top-bar">
-
-    <h1>Quản lý tuyển dụng</h1>
-
-    <button (click)="showForm = true">
-      + Thêm tuyển dụng
+    <h1>Quản lý Tuyển dụng</h1>
+    <button class="add-btn" (click)="showForm = true">
+      + Thêm tin tuyển dụng
     </button>
-
   </div>
 
   <!-- FORM -->
+<div class="form-box" *ngIf="showForm">
+  <h2>Thêm tin tuyển dụng mới</h2>
 
-  <div
-    class="form-box"
-    *ngIf="showForm"
-  >
+  <div class="form-grid">
+    <div class="form-group">
+      <label>Tiêu đề <span class="required">*</span></label>
+      <input type="text" [(ngModel)]="newRecruitment.title" placeholder="Ví dụ: Nhân viên Marketing">
+    </div>
 
-    <input
-      type="text"
-      placeholder="Tiêu đề"
-      [(ngModel)]="newRecruitment.title"
-    >
+    <div class="form-group">
+      <label>Phòng ban <span class="required">*</span></label>
+      <input type="text" [(ngModel)]="newRecruitment.department" placeholder="Marketing, IT, HR...">
+    </div>
 
-    <input
-      type="text"
-      placeholder="Mô tả"
-      [(ngModel)]="newRecruitment.description"
-    >
-
-    <input
-      type="text"
-      placeholder="Phòng ban"
-      [(ngModel)]="newRecruitment.department"
-    >
-
-    <button (click)="addRecruitment()">
-      Lưu
-    </button>
-
+    <div class="form-group full-width">
+      <label>Mô tả công việc</label>
+      <textarea rows="5" [(ngModel)]="newRecruitment.description"
+                placeholder="Mô tả chi tiết công việc, yêu cầu..."></textarea>
+    </div>
   </div>
 
+  <div class="form-actions">
+    <button class="cancel-btn" (click)="resetForm()">Hủy</button>
+    <button class="save-btn" (click)="addRecruitment()">Lưu tin tuyển dụng</button>
+  </div>
+</div>
+
   <!-- TABLE -->
-
-  <table>
-
-    <thead>
-
-      <tr>
-
-        <th>ID</th>
-
-        <th>Tiêu đề</th>
-
-        <th>Mô tả</th>
-
-        <th>Phòng ban</th>
-
-        <th>Trạng thái</th>
-
-        <th>Hành động</th>
-
-      </tr>
-
-    </thead>
-
-    <tbody>
-
-      <tr *ngFor="let item of recruitments">
-
-        <td>{{ item.id }}</td>
-
-        <td>{{ item.title }}</td>
-
-        <td>{{ item.description }}</td>
-
-        <td>{{ item.department }}</td>
-
-        <td>
-
-          <span class="status">
-
-            {{
-              item.status === 'OPEN'
-                ? 'Đang tuyển'
-                : 'Đã đóng'
-            }}
-
-          </span>
-
-        </td>
-
-        <td class="action-buttons">
-
-          <button
-            class="close-btn"
-            (click)="closeRecruitment(item.id)"
-          >
-            Đóng
-          </button>
-
-        </td>
-
-      </tr>
-
-    </tbody>
-
-  </table>
-
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>Tiêu đề</th>
+          <th>Phòng ban</th>
+          <th>Trạng thái</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of recruitments; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td class="title-cell">{{ item.title }}</td>
+          <td>{{ item.department }}</td>
+          <td>
+            <span class="status-badge"
+                  [class.open]="item.status === 'OPEN'"
+                  [class.closed]="item.status === 'CLOSED'">
+              {{ item.status === 'OPEN' ? 'Đang tuyển' : 'Đã đóng' }}
+            </span>
+          </td>
+          <td class="action-cell">
+            <button class="close-btn"
+                    (click)="closeRecruitment(item.id)"
+                    *ngIf="item.status === 'OPEN'">
+              Đóng
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

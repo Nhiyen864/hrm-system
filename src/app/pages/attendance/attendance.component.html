@@ -6,78 +6,54 @@
 
   </div>
 
-  <!-- ACTIONS -->
+<div class="form-box">
+    <h2>Chấm công nhân viên</h2>
 
-  <div class="form-box">
+    <div class="form-group">
+      <label>Mã nhân viên</label>
+      <input type="number" placeholder="Nhập Employee ID" [(ngModel)]="employeeId" (ngModelChange)="loadEmployeeInfo()">
+    </div>
 
-    <input
-      type="number"
-      placeholder="Employee ID"
-      [(ngModel)]="employeeId"
-    >
+    <div class="form-group">
+      <label>Tên nhân viên</label>
+      <input type="text" placeholder="Tên nhân viên" [(ngModel)]="employeeName" readonly>
+    </div>
 
-    <button (click)="loadAttendance()">
-      Xem lịch sử
+    <div class="check-type">
+      <label>
+        <input type="radio" name="checkType" [(ngModel)]="checkType" value="CheckIn">
+        <span>Check In</span>
+      </label>
+      <label>
+        <input type="radio" name="checkType" [(ngModel)]="checkType" value="CheckOut">
+        <span>Check Out</span>
+      </label>
+    </div>
+
+    <button class="btn-send" (click)="submitAttendance()" [disabled]="!checkType">
+      {{ checkType === 'CheckIn' ? 'CHECK IN' : 'CHECK OUT' }}
     </button>
-
-    <button
-      class="checkin-btn"
-      (click)="checkIn()"
-    >
-      Check In
-    </button>
-
-    <button
-      class="checkout-btn"
-      (click)="checkOut()"
-    >
-      Check Out
-    </button>
-
   </div>
 
-  <!-- TABLE -->
-
+  <!-- TABLE LỊCH SỬ -->
   <table>
-
     <thead>
-
       <tr>
-
+        <th>STT</th>
         <th>ID</th>
-
         <th>Ngày</th>
-
         <th>Check In</th>
-
         <th>Check Out</th>
-
       </tr>
-
     </thead>
-
     <tbody>
-
-      <tr *ngFor="let item of attendances">
-
+      <tr *ngFor="let item of attendances; let i = index">
+        <td>{{ i + 1 }}</td>
         <td>{{ item.id }}</td>
-
-        <td>
-          {{ item.workDate | date:'dd/MM/yyyy' }}
-        </td>
-
-        <td>
-          {{ item.checkIn }}
-        </td>
-
-        <td>
-          {{ item.checkOut || '---' }}
-        </td>
-
+        <td>{{ item.workDate | date:'dd/MM/yyyy' }}</td>
+        <td>{{ item.checkIn || '---' }}</td>
+        <td>{{ item.checkOut || '---' }}</td>
       </tr>
-
     </tbody>
-
   </table>
-
 </div>

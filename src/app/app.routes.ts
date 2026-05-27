@@ -9,6 +9,7 @@ import { PerformanceComponent } from './pages/performance/performance.component'
 import { RecruitmentComponent } from './pages/recruitment/recruitment.component';
 import { CandidatesComponent } from './pages/candidates/candidates.component';
 import { authGuard } from './guards/auth.guard';
+import { UserComponent } from './pages/user/user.component';
 
 export const routes: Routes = [
 
@@ -55,11 +56,17 @@ export const routes: Routes = [
   {
     path: 'candidates',
     component: CandidatesComponent
-  }, 
+  },
 
   {
     path: 'employees',
     component: EmployeesComponent,
+    canActivate: [authGuard]
+  },
+
+  {
+    path: 'user',
+    component: UserComponent,
     canActivate: [authGuard]
   }
 ];

@@ -1,83 +1,69 @@
 <div class="leave-page">
-
   <div class="top-bar">
-
     <h1>Quản lý nghỉ phép</h1>
-
-    <button (click)="showForm = true">
-      + Tạo đơn nghỉ
-    </button>
-
+    <button (click)="showForm = true">+ Tạo đơn nghỉ</button>
   </div>
 
-  <!-- FORM -->
+  <!-- FORM TẠO ĐƠN -->
+  <div class="form-box" *ngIf="showForm">
+    <h2>Tạo đơn nghỉ phép mới</h2>
 
-  <div
-    class="form-box"
-    *ngIf="showForm"
-  >
+    <div class="form-group">
+      <label>Mã nhân viên <span class="required">*</span></label>
+      <input type="number" placeholder="Nhập Employee ID" [(ngModel)]="newLeave.employeeId">
+    </div>
 
-    <input
-      type="number"
-      placeholder="Employee ID"
-      [(ngModel)]="newLeave.employeeId"
-    >
+    <div class="form-row">
+      <div class="form-group">
+        <label>Từ ngày <span class="required">*</span></label>
+        <input type="date" [(ngModel)]="newLeave.startDate">
+      </div>
+      <div class="form-group">
+        <label>Đến ngày <span class="required">*</span></label>
+        <input type="date" [(ngModel)]="newLeave.endDate">
+      </div>
+    </div>
 
-    <input
-      type="date"
-      [(ngModel)]="newLeave.startDate"
-    >
+    <div class="form-group">
+      <label>Lý do nghỉ <span class="required">*</span></label>
+      <textarea placeholder="Nhập lý do nghỉ phép" rows="4" [(ngModel)]="newLeave.reason"></textarea>
+    </div>
 
-    <input
-      type="date"
-      [(ngModel)]="newLeave.endDate"
-    >
+    <div class="form-group">
+      <label>Đính kèm tệp (nếu có)</label>
+      <input type="file" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx,.jpg,.png,.jpeg">
+      <small *ngIf="selectedFileName" style="color: green; display: block; margin-top: 5px;">
+        ✓ Đã chọn: {{ selectedFileName }}
+      </small>
+    </div>
 
-    <input
-      type="text"
-      placeholder="Lý do"
-      [(ngModel)]="newLeave.reason"
-    >
-
-    <button (click)="addLeave()">
-      Lưu
-    </button>
-
+    <div class="form-buttons">
+      <button class="btn-cancel" (click)="resetForm()">Hủy</button>
+      <button class="btn-save" (click)="addLeave()">Gửi đơn nghỉ phép</button>
+    </div>
   </div>
 
   <!-- TABLE -->
-
   <table>
-
     <thead>
-
       <tr>
-
-        <th>ID</th>
-
+        <th>STT</th>
         <th>Nhân viên</th>
-
         <th>Từ ngày</th>
-
         <th>Đến ngày</th>
-
         <th>Lý do</th>
-
         <th>Trạng thái</th>
-
         <th>Hành động</th>
-
       </tr>
-
     </thead>
-
     <tbody>
+      <tr *ngFor="let item of leaveRequests; let i = index">
 
-      <tr *ngFor="let item of leaveRequests">
+        <td>{{ i + 1 }}</td>
 
-        <td>{{ item.id }}</td>
-
-        <td>{{ item.employeeName }}</td>
+        <td>
+          {{ item.employeeName || item.employeeId }}
+        </td>
 
         <td>
           {{ item.startDate | date:'dd/MM/yyyy' }}
@@ -90,49 +76,46 @@
         <td>{{ item.reason }}</td>
 
         <td>
-
-          <span class="status">
+          <span class="status"
+                [ngClass]="{
+                  'approved': item.status === 'Approved',
+                  'rejected': item.status === 'Rejected'
+                }">
 
             {{
               item.status === 'Pending'
                 ? 'Chờ duyệt'
+
                 : item.status === 'Approved'
                 ? 'Đã duyệt'
+
                 : 'Từ chối'
             }}
 
           </span>
-
         </td>
 
         <td class="action-buttons">
 
-          <button
-            class="approve-btn"
-            (click)="updateStatus(
-              item.id,
-              'Approved'
-            )"
-          >
+          <button class="approve-btn"
+                  *ngIf="item.status === 'Pending'"
+                  (click)="updateStatus(item.id, 'Approved')">
+
             Duyệt
+
           </button>
 
-          <button
-            class="reject-btn"
-            (click)="updateStatus(
-              item.id,
-              'Rejected'
-            )"
-          >
+          <button class="reject-btn"
+                  *ngIf="item.status === 'Pending'"
+                  (click)="updateStatus(item.id, 'Rejected')">
+
             Từ chối
+
           </button>
 
         </td>
 
       </tr>
-
     </tbody>
-
   </table>
-
 </div>

@@ -13,62 +13,34 @@ import { HttpClient } from '@angular/common/http';
 export class LoginComponent {
 
   username = '';
-
   password = '';
-
   router = inject(Router);
-
   http = inject(HttpClient);
 
   login(){
-
     const data = {
-
       username: this.username,
-
       password: this.password
-
     };
 
     this.http.post<any>(
-
       'http://localhost:5270/api/Auth/login',
-
       data
-
     )
     .subscribe({
-
       next: (res) => {
-
         console.log(res);
-
-        // SAVE TOKEN
-
         localStorage.setItem(
-
           'token',
-
           res.token
-
         );
-
         // GO DASHBOARD
-
         this.router.navigate(['/dashboard']);
-
       },
-
       error: (err) => {
-
         console.log(err);
-
         alert(JSON.stringify(err.error));
-
       }
-
     });
-
   }
-
 }

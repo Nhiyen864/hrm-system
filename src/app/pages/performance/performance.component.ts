@@ -35,128 +35,71 @@ implements OnInit {
   newPerformance = {
 
     employeeId: 0,
-
     score: 0,
-
     review: '',
-
     period: ''
-
   };
 
   ngOnInit(): void {
-
     this.loadPerformances();
-
   }
 
   getHeaders(){
-
     return {
-
       headers: new HttpHeaders({
-
         Authorization:
           `Bearer ${localStorage.getItem('token')}`
-
       })
-
     };
-
   }
 
   loadPerformances(){
-
     this.http.get<any[]>(
-
       this.apiUrl,
-
       this.getHeaders()
-
     ).subscribe({
-
       next: (res) => {
-
         console.log(res);
-
         this.performances = res;
-
       },
-
       error: (err) => {
-
         console.log(err);
-
       }
-
     });
-
   }
 
   addPerformance(){
-
     this.http.post(
-
       this.apiUrl,
-
       this.newPerformance,
-
       this.getHeaders()
-
     ).subscribe({
-
       next: () => {
-
         this.loadPerformances();
-
         this.newPerformance = {
-
           employeeId: 0,
-
           score: 0,
-
           review: '',
-
           period: ''
-
         };
-
         this.showForm = false;
-
       },
-
       error: (err) => {
-
         alert(JSON.stringify(err.error));
-
       }
-
     });
-
   }
 
   getRank(score: number){
-
     if(score >= 90){
-
       return 'Xuất sắc';
-
     }
-
     if(score >= 75){
-
       return 'Tốt';
-
     }
-
     if(score >= 50){
-
       return 'Trung bình';
-
     }
-
     return 'Kém';
-
   }
-
 }

@@ -1,17 +1,7 @@
-import {
-  Component,
-  inject,
-  OnInit
-} from '@angular/core';
-
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { FormsModule } from '@angular/forms';
-
-import {
-  HttpClient,
-  HttpHeaders
-} from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-attendance',
@@ -20,139 +10,102 @@ import {
   templateUrl: './attendance.component.html',
   styleUrl: './attendance.component.css'
 })
-export class AttendanceComponent
-implements OnInit {
+export class AttendanceComponent implements OnInit {
 
   http = inject(HttpClient);
 
-  apiUrl =
-    'http://localhost:5270/api/Attendance';
+  apiUrl = 'http://localhost:5270/api/Attendance';
 
   attendances: any[] = [];
 
   employeeId = 0;
+  employeeName = '';
+  checkType = '';
 
   ngOnInit(): void {
-
-    this.loadAttendance();
-
+    this.loadAllAttendance();
   }
 
-  getHeaders(){
-
+  private getHeaders() {
     return {
-
       headers: new HttpHeaders({
-
-        Authorization:
-          `Bearer ${localStorage.getItem('token')}`
-
+        Authorization: `Bearer ${localStorage.getItem('token')}`
       })
-
     };
-
   }
 
-  loadAttendance(){
+  loadAllAttendance() {
+  this.http.get<any[]>(
+    this.apiUrl,
+    this.getHeaders()
+  )
+  .subscribe({
+    next: (res: any) => {
+      console.log(res);
+      this.attendances =
+        Array.isArray(res)
+        ? res
+        : (res.data || res);
+    },
+    error: (err) => {
+      console.log(err);
+    }
+  });
+}
+  loadEmployeeInfo() {
+    if (this.employeeId > 0) {
+      this.loadAttendance();
+    } else {
+      this.attendances = [];
+      this.employeeName = '';
+    }
+  }
 
-    if(this.employeeId === 0){
+  loadAttendance() {
+    if (this.employeeId <= 0) return;
 
+    this.http.get<any[]>(`${this.apiUrl}/employee/${this.employeeId}`, this.getHeaders())
+      .subscribe({
+        next: (res: any) => {
+          console.log('Attendance Response:', res);
+          this.attendances = Array.isArray(res) ? res : (res.data || res);
+        },
+        error: (err) => {
+          console.error(err);
+          this.attendances = [];
+        }
+      });
+  }
+
+  submitAttendance() {
+    if (this.employeeId <= 0) {
+      alert('Vui lòng nhập mã nhân viên');
       return;
-
     }
 
-    this.http.get<any[]>(
+    if (!this.checkType) {
+      alert('Vui lòng chọn Check In hoặc Check Out');
+      return;
+    }
 
-      `${this.apiUrl}/employee/${this.employeeId}`,
+    const endpoint = this.checkType === 'CheckIn' ? '/check-in' : '/check-out';
 
-      this.getHeaders()
-
-    ).subscribe({
-
-      next: (res) => {
-
-        console.log(res);
-
-        this.attendances = res;
-
-      },
-
-      error: (err) => {
-
-        console.log(err);
-
-      }
-
-    });
-
-  }
-
-  checkIn(){
-
-    this.http.post(
-
-      `${this.apiUrl}/check-in`,
-
-      {
-
-        employeeId: this.employeeId
-
-      },
-
-      this.getHeaders()
-
-    ).subscribe({
-
+    this.http.post(`${this.apiUrl}${endpoint}`, {
+      employeeId: this.employeeId
+    }, this.getHeaders()).subscribe({
       next: () => {
+        const message = this.checkType === 'CheckIn'
+          ? '✅ Check In thành công!'
+          : '✅ Check Out thành công!';
 
-        alert('Check in thành công');
-
+        alert(message);
         this.loadAttendance();
-
+        this.checkType = ''; // Reset radio button
       },
-
       error: (err) => {
-
-        alert(err.error);
-
+        console.error(err);
+        alert(err.error?.message || 'Chấm công thất bại');
       }
-
     });
-
   }
-
-  checkOut(){
-
-    this.http.post(
-
-      `${this.apiUrl}/check-out`,
-
-      {
-
-        employeeId: this.employeeId
-
-      },
-
-      this.getHeaders()
-
-    ).subscribe({
-
-      next: () => {
-
-        alert('Check out thành công');
-
-        this.loadAttendance();
-
-      },
-
-      error: (err) => {
-
-        alert(err.error);
-
-      }
-
-    });
-
-  }
-
 }

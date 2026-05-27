@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { EmployeeService } from '../../services/employee.service';
+import { DepartmentService } from '../../services/department.service';   // ← Thêm dòng này
 
 @Component({
   selector: 'app-employees',
@@ -13,233 +14,202 @@ import { EmployeeService } from '../../services/employee.service';
 })
 export class EmployeesComponent implements OnInit {
 
-  employeeService = inject(EmployeeService);
-
+  private employeeService = inject(EmployeeService);
+  private departmentService = inject(DepartmentService);
   searchText = '';
-
   showForm = false;
-
   isEdit = false;
-
   showDeletePopup = false;
-
+  showDetailModal = false;
   deleteId = 0;
+  selectedEmployee: any = null;
+
+  departments: any[] = [];
+  employees: any[] = [];
+  filteredEmployees: any[] = [];
 
   newEmployee = {
     id: 0,
     fullName: '',
-    departmentId: 1,
+    departmentId: 0,
     position: '',
-    status: 'WORKING'
+    status: 'WORKING',
+    dob: null as string | null,
+    gender: '',
+    phone: '',
+    address: '',
+    salary: null as number | null
   };
-
-  employees: any[] = [];
 
   ngOnInit(): void {
 
     this.loadEmployees();
-
+    this.loadDepartments();
   }
 
-  // LOAD EMPLOYEE
-
-  loadEmployees(){
-
+  // ==================== LOAD NHÂN VIÊN ====================
+  loadEmployees(): void {
     this.employeeService.getEmployees().subscribe({
-
-      next: (data) => {
-
-        console.log(data);
-
-        this.employees = data;
-
+      next: (response) => {
+        console.log('✅ Employees Response:', response);
+        this.employees = Array.isArray(response) ? response : (response.data || response);
+        this.filteredEmployees = [...this.employees];
+      console.log(`✅ Đã load ${this.employees.length} nhân viên vào bảng`);
       },
-
       error: (err) => {
-
-        console.log(err);
-
+        console.error('❌ Load employees error:', err);
+        if (err.status === 401) {
+          alert('Phiên đăng nhập hết hạn!');
+        }
       }
-
     });
-
   }
 
-  // SEARCH
 
-  get filteredEmployees(){
-
-    if(!this.employees) return [];
-
-    return this.employees.filter(emp =>
-
-      emp.fullName
-        ?.toLowerCase()
-        .includes(this.searchText.toLowerCase())
-
-    );
-
+  // ==================== LOAD PHÒNG BAN ====================
+  loadDepartments(): void {
+    this.departmentService.getAll().subscribe({
+      next: (response) => {
+        console.log('✅ Departments loaded:', response);
+        this.departments = Array.isArray(response) ? response : (response.data || response);
+      },
+      error: (err) => {
+        console.error('❌ Load departments failed:', err);
+        alert('Không thể tải danh sách phòng ban');
+      }
+    });
   }
 
-  // ADD EMPLOYEE
+  viewDetail(emp: any): void {
+    this.employeeService.getEmployeeById(emp.id).subscribe({
+      next: (data) => {
+        this.selectedEmployee = data;
+        this.showDetailModal = true;
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Không thể tải thông tin chi tiết');
+      }
+    });
+  }
 
-  addEmployee(){
-
-    if(
-      this.newEmployee.fullName.trim() === '' ||
-      this.newEmployee.position.trim() === ''
-    ){
-
-      alert('Vui lòng nhập đầy đủ thông tin');
-
+  closeDetailModal(): void {
+    this.showDetailModal = false;
+    this.selectedEmployee = null;
+  }
+  // ==================== CRUD NHÂN VIÊN ====================
+ addEmployee(): void {
+    if (!this.newEmployee.fullName?.trim() ||
+        !this.newEmployee.position?.trim() ||
+        this.newEmployee.departmentId === 0) {
+      alert('Vui lòng nhập đầy đủ thông tin bắt buộc');
       return;
-
     }
 
-    this.employeeService.addEmployee(this.newEmployee)
-      .subscribe({
-
-        next: () => {
-
-          this.loadEmployees();
-
-          this.newEmployee = {
-            id: 0,
-            fullName: '',
-            departmentId: 1,
-            position: '',
-            status: 'WORKING'
-          };
-
-          this.showForm = false;
-
-        },
-
-        error: (err) => {
-
-          console.log(err);
-
-        }
-
-      });
-
+    this.employeeService.addEmployee(this.newEmployee).subscribe({
+      next: () => {
+        alert('✅ Thêm nhân viên thành công!');
+        this.resetForm();
+        this.loadEmployees();
+      },
+      error: (err) => {
+        console.error(err);
+        alert(err.error?.message || 'Thêm nhân viên thất bại');
+      }
+    });
   }
 
-  // DELETE
-
-  deleteEmployee(id: number){
-
-    this.employees = this.employees.filter(
-      emp => emp.id !== id
-    );
-
-  }
-
-  openDeletePopup(id: number){
-
-    this.showDeletePopup = true;
-
-    this.deleteId = id;
-
-  }
-
-  confirmDelete(){
-
-    this.employeeService
-      .deleteEmployee(this.deleteId)
-      .subscribe({
-
-        next: () => {
-
-          this.loadEmployees();
-
-          this.showDeletePopup = false;
-
-        },
-
-        error: (err) => {
-
-          console.log(err);
-
-        }
-
-      });
-
-  }
-
-  // EDIT
-
-  editEmployee(emp: any){
-
+  editEmployee(emp: any): void {
     this.newEmployee = {
-
       id: emp.id,
-
-      fullName: emp.fullName,
-
-      departmentId:
-
-        emp.departmentId ||
-
-        emp.department?.id ||
-
-        1,
-
-      position: emp.position,
-
-      status: emp.status
-
+      fullName: emp.fullName || '',
+      departmentId: emp.departmentId || 0,
+      position: emp.position || '',
+      status: emp.status || 'WORKING',
+      dob: emp.dob ? emp.dob.split('T')[0] : null,
+      gender: emp.gender || '',
+      phone: emp.phone || '',
+      address: emp.address || '',
+      salary: emp.salary || null
     };
-
     this.showForm = true;
-
     this.isEdit = true;
-
   }
 
-  // UPDATE
+  updateEmployee(): void {
+    if (!this.newEmployee.fullName?.trim() || !this.newEmployee.position?.trim()) {
+      alert('Vui lòng nhập đầy đủ thông tin');
+      return;
+    }
 
-  updateEmployee(){
-
-    this.employeeService
-      .updateEmployee(
-        this.newEmployee.id,
-        this.newEmployee
-      )
-      .subscribe({
-
-        next: () => {
-
-          this.loadEmployees();
-
-          this.showForm = false;
-
-          this.isEdit = false;
-
-          this.newEmployee = {
-
-            id: 0,
-
-            fullName: '',
-
-            departmentId: 1,
-
-            position: '',
-
-            status: 'WORKING'
-
-          };
-
-        },
-
-        error: (err) => {
-
-          console.log(err);
-
-        }
-
-      });
-
+    this.employeeService.updateEmployee(this.newEmployee.id, this.newEmployee).subscribe({
+      next: () => {
+        alert('✅ Cập nhật thành công!');
+        this.resetForm();
+        this.loadEmployees();
+      },
+      error: (err) => {
+        console.error(err);
+        alert(err.error?.message || 'Cập nhật thất bại');
+      }
+    });
   }
 
+  openDeletePopup(id: number): void {
+    this.deleteId = id;
+    this.showDeletePopup = true;
+  }
+
+  confirmDelete(): void {
+  this.employeeService.deleteEmployee(this.deleteId).subscribe({
+    next: (response) => {
+      console.log('✅ Delete success response:', response);
+      alert('Xóa nhân viên thành công!');
+      this.showDeletePopup = false;
+      this.loadEmployees();
+    },
+    error: (err) => {
+      console.error('Delete Error:', err);
+
+      if (err.status === 200) {
+        console.log('✅ Backend xóa thành công nhưng response không chuẩn JSON');
+        alert('Xóa nhân viên thành công!');
+        this.showDeletePopup = false;
+        this.loadEmployees();
+      }
+      else {
+        alert(err.error?.message || err.error?.title || 'Xóa thất bại');
+        this.showDeletePopup = false;
+      }
+    }
+  });
+}
+
+  onSearchChange(): void {
+  if (!this.searchText?.trim()) {
+    this.filteredEmployees = [...this.employees];
+  } else {
+    const keyword = this.searchText.toLowerCase().trim();
+    this.filteredEmployees = this.employees.filter(emp =>
+      emp.fullName?.toLowerCase().includes(keyword)
+    );
+  }
+}
+
+  public resetForm(): void {
+    this.newEmployee = {
+      id: 0,
+      fullName: '',
+      departmentId: 0,
+      position: '',
+      status: 'WORKING',
+      dob: null,
+      gender: '',
+      phone: '',
+      address: '',
+      salary: null
+    };
+    this.showForm = false;
+    this.isEdit = false;
+  }
 }
