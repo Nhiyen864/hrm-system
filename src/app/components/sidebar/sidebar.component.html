@@ -34,7 +34,9 @@
     Ứng viên
   </a>
 
-  <a routerLink="/user">
+  <a
+    *ngIf="userRole === 'ADMIN'"
+    routerLink="/user">
     Quản lý người dùng
   </a>
 
