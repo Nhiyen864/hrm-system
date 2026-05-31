@@ -24,11 +24,6 @@ export const routes: Routes = [
   },
 
   {
-    path: 'employees',
-    component: EmployeesComponent
-  },
-
-  {
     path: 'departments',
     component: DepartmentsComponent
   },
